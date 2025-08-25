@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Caption Generator - Create Viral Social Media Captions</title>
+    <meta name="description" content="Generate engaging social media captions for Instagram, Facebook, Twitter, and LinkedIn with AI. Free tool with premium features available.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 40px; color: white; }
+        .header h1 { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: clamp(1rem, 3vw, 1.2rem); opacity: 0.9; }
+        .main-card { background: white; border-radius: 20px; padding: clamp(20px, 5vw, 40px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 40px; }
+        .premium-banner { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #333; text-align: center; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        .premium-banner:hover { transform: translateY(-2px); }
+        .usage-counter { background: #e8f4f8; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; color: #0066cc; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #555; }
+        input, textarea, select { width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px; transition: border-color 0.3s; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #667eea; }
+        textarea { resize: vertical; min-height: 120px; }
+        .form-row { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) { .form-row { grid-template-columns: 1fr 1fr; } }
+        .generate-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 40px; font-size: 18px; font-weight: 600; border-radius: 50px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; width: 100%; margin: 20px 0; }
+        .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        .generate-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .results { background: #f8f9fa; border-radius: 15px; padding: 30px; margin-top: 30px; display: none; }
+        .results.show { display: block; animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .caption-result { background: white; border-radius: 10px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #667eea; }
+        .caption-result h4 { color: #667eea; margin-bottom: 10px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .caption-text { line-height: 1.6; margin-bottom: 15px; }
+        .copy-btn { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; transition: background 0.2s; }
+        .copy-btn:hover { background: #218838; }
+        .loading { display: none; text-align: center; padding: 20px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .feature-card { background: white; border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px; }
+        .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .popup-overlay.show { display: flex; }
+        .popup-content { background: white; border-radius: 20px; padding: clamp(20px, 5vw, 40px); max-width: 500px; width: 90%; text-align: center; position: relative; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        .close-btn { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+        .popup-header h2 { font-size: 1.8rem; color: #333; margin: 20px 0 10px; }
+        .emoji { font-size: 3rem; margin-bottom: 15px; display: block; }
+        .benefit-list { list-style: none; margin: 25px 0; text-align: left; }
+        .benefit-list li { padding: 8px 0; color: #555; position: relative; padding-left: 30px; }
+        .benefit-list li:before { content: "✅"; position: absolute; left: 0; }
+        .email-form { margin: 25px 0; }
+        .email-input { width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px; margin-bottom: 15px; }
+        .email-input:focus { outline: none; border-color: #667eea; }
+        .email-submit-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; transition: all 0.3s ease; }
+        .email-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        .privacy-text { font-size: 12px; color: #666; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div id="emailPopup" class="popup-overlay">
+        <div class="popup-content">
+            <button class="close-btn" onclick="closeEmailPopup()">&times;</button>
+            <div class="popup-header">
+                <span class="emoji">🎁</span>
+                <h2>Get 50 Free Caption Templates!</h2>
+                <p>Join 15,847+ creators getting viral content ideas weekly</p>
+            </div>
+            <ul class="benefit-list">
+                <li>50 proven caption templates that boost engagement</li>
+                <li>Weekly newsletter with trending hashtags</li>
+                <li>Exclusive social media growth tips</li>
+                <li>First access to premium features</li>
+            </ul>
+            <form class="email-form" id="emailCaptureForm">
+                <input type="email" class="email-input" placeholder="Enter your email address" required id="emailInput">
+                <button type="submit" class="email-submit-btn">🚀 Get My Free Templates</button>
+            </form>
+            <p class="privacy-text">🔒 We respect your privacy. Unsubscribe at any time.</p>
+        </div>
+    </div>
+
+```
+<div class="container">
+    <div class="header">
+        <h1>🚀 AI Caption Generator</h1>
+        <p>Create engaging social media captions that boost engagement and grow your following</p>
+    </div>
+
+    <div class="main-card">
+        <div class="premium-banner" onclick="showEmailPopup()">
+            ⭐ Want unlimited captions? Get 50 free templates + premium access!
+        </div>
+
+        <div class="usage-counter" id="usageCounter">
+            📊 Free uses today: <span id="usageCount">5/5</span> remaining
+        </div>
+
+        <form id="captionForm">
+            <div class="form-group">
+                <label for="topic">What's your post about?</label>
+                <textarea id="topic" placeholder="Describe your post content, product, or message. Be specific for better results!" required></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="platform">Social Media Platform</label>
+                    <select id="platform" required>
+                        <option value="">Select Platform</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="twitter">Twitter/X</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="tiktok">TikTok</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tone">Caption Style</label>
+                    <select id="tone" required>
+                        <option value="">Select Style</option>
+                        <option value="professional">Professional</option>
+                        <option value="casual">Casual & Friendly</option>
+                        <option value="funny">Funny & Witty</option>
+                        <option value="inspirational">Inspirational</option>
+                        <option value="sales">Sales & Promotional</option>
+                        <option value="storytelling">Storytelling</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="hashtags">Include Hashtags</label>
+                    <select id="hashtags">
+                        <option value="yes">Yes, include hashtags</option>
+                        <option value="no">No hashtags</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="length">Caption Length</label>
+                    <select id="length">
+                        <option value="short">Short (1-2 sentences)</option>
+                        <option value="medium">Medium (3-5 sentences)</option>
+                        <option value="long">Long (paragraph)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="generate-btn" id="generateBtn">✨ Generate Captions</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Creating your perfect captions...</p>
+        </div>
+
+        <div class="results" id="results">
+            <h3 style="margin-bottom: 20px; color: #333;">🎉 Your Generated Captions:</h3>
+            <div id="captionsContainer"></div>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Platform Optimized</h3>
+            <p>Tailored captions for Instagram, Facebook, Twitter, LinkedIn, and TikTok with perfect character limits and style.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Instant Results</h3>
+            <p>Generate multiple caption variations in seconds. No more staring at blank screens or writer's block!</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3>Engagement Focused</h3>
+            <p>Captions designed to boost likes, comments, and shares. Proven formulas that work across all platforms.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    class CaptionGenerator {
+        constructor() {
+            this.form = document.getElementById('captionForm');
+            this.loading = document.getElementById('loading');
+            this.results = document.getElementById('results');
+            this.captionsContainer = document.getElementById('captionsContainer');
+            this.usageCount = this.getUsageCount();
+            this.maxFreeUses = 5;
+            
+            this.updateUsageDisplay();
+            this.setupEmailPopup();
+            this.init();
+        }
+
+        init() {
+            this.form.addEventListener('submit', this.handleSubmit.bind(this));
+        }
+
+        getUsageCount() {
+            const saved = localStorage.getItem('captionUsage');
+            if (saved) {
+                const data = JSON.parse(saved);
+                const today = new Date().toDateString();
+                if (data.date === today) {
+                    return data.count;
+                }
+            }
+            return 0;
+        }
+
+        saveUsageCount(count) {
+            const data = {
+                date: new Date().toDateString(),
+                count: count
+            };
+            localStorage.setItem('captionUsage', JSON.stringify(data));
+        }
+
+        updateUsageDisplay() {
+            const remaining = Math.max(0, this.maxFreeUses - this.usageCount);
+            document.getElementById('usageCount').textContent = remaining + '/' + this.maxFreeUses;
+            
+            if (remaining === 0) {
+                document.getElementById('generateBtn').textContent = '🔒 Daily limit reached - Get unlimited access!';
+                document.getElementById('generateBtn').onclick = function() { showEmailPopup(); };
+            }
+        }
+
+        setupEmailPopup() {
+            setTimeout(() => {
+                if (this.usageCount >= 2) {
+                    showEmailPopup();
+                }
+            }, 30000);
+        }
+
+        async handleSubmit(e) {
+            e.preventDefault();
+            
+            if (this.usageCount >= this.maxFreeUses) {
+                showEmailPopup();
+                return;
+            }
+            
+            const formData = new FormData(this.form);
+            const data = {
+                topic: formData.get('topic'),
+                platform: formData.get('platform'),
+                tone: formData.get('tone'),
+                hashtags: formData.get('hashtags'),
+                length: formData.get('length')
+            };
+
+            this.showLoading(true);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            const captions = this.generateCaptions(data);
+            this.displayResults(captions);
+            
+            this.usageCount++;
+            this.saveUsageCount(this.usageCount);
+            this.updateUsageDisplay();
+            this.showLoading(false);
+
+            if (this.usageCount >= 3) {
+                setTimeout(() => showEmailPopup(), 5000);
+            }
+        }
+
+        generateCaptions(data) {
+            const templates = {
+                instagram: {
+                    professional: [
+                        data.topic + " 💼\\n\\nSharing insights on " + data.topic + ". What are your thoughts? Let me know in the comments below.\\n\\n{hashtags}",
+                        "Today's focus: " + data.topic + " ✨\\n\\nConsistency and dedication are key to success. How do you stay motivated?\\n\\n{hashtags}",
+                        data.topic + " - a game changer in today's market. 📊\\n\\nSwipe to learn more about why this matters.\\n\\n{hashtags}"
+                    ],
+                    casual: [
+                        "Just had to share this! " + data.topic + " 😍\\n\\nHonestly, this made my day. Who else loves this?\\n\\n{hashtags}",
+                        "Sunday vibes with " + data.topic + " ☀️\\n\\nSometimes the simple things bring the most joy. What's making you smile today?\\n\\n{hashtags}",
+                        "Can we talk about " + data.topic + "? 🗣️\\n\\nI'm obsessed and I'm not sorry about it! Drop a ❤️ if you agree.\\n\\n{hashtags}"
+                    ],
+                    funny: [
+                        "Me: I don't need " + data.topic + "\\nAlso me: *gets " + data.topic + "* 😂\\n\\nWhy am I like this? Anyone else relate?\\n\\n{hashtags}",
+                        data.topic + " hit different today 🤪\\n\\nI'm not sure what I expected, but it wasn't this. Send help! 😅\\n\\n{hashtags}",
+                        "Plot twist: " + data.topic + " was actually worth the hype 🎭\\n\\nColor me surprised! What surprised you recently?\\n\\n{hashtags}"
+                    ],
+                    inspirational: [
+                        "Every journey starts with a single step. 🌟\\n\\n" + data.topic + " reminded me that progress isn't always linear, but it's always worth it.\\n\\n{hashtags}",
+                        "Grateful for " + data.topic + " today 🙏\\n\\nSometimes the universe gives us exactly what we need. Trust the process.\\n\\n{hashtags}",
+                        "Your only limit is your mindset. 💭\\n\\n" + data.topic + " taught me that challenges are just opportunities in disguise.\\n\\n{hashtags}"
+                    ],
+                    sales: [
+                        "🔥 Special offer alert! " + data.topic + "\\n\\nLimited time only - don't miss out! Link in bio for details.\\n\\n{hashtags}",
+                        "Why choose " + data.topic + "? Let me tell you... ✨\\n\\n✅ Quality guaranteed\\n✅ Fast delivery\\n✅ Happy customers\\n\\nReady to try it? DM us!\\n\\n{hashtags}",
+                        "Customer favorite: " + data.topic + " 🏆\\n\\n\"Best purchase I've made this year!\" - Sarah M.\\n\\nWhat are you waiting for?\\n\\n{hashtags}"
+                    ],
+                    storytelling: [
+                        "A few months ago, I discovered " + data.topic + "...\\n\\nLittle did I know it would completely change my perspective. Here's what happened next... 👇\\n\\n{hashtags}",
+                        "Picture this: It's 6 AM and I'm thinking about " + data.topic + " 🌅\\n\\nSounds crazy? Maybe. But let me tell you why this matters...\\n\\n{hashtags}",
+                        "The story behind " + data.topic + " is incredible 📖\\n\\nIt started with a simple idea and grew into something amazing. Swipe to see the journey...\\n\\n{hashtags}"
+                    ]
+                }
+            };
+
+            const hashtags = ['#motivation', '#inspiration', '#success', '#lifestyle', '#goals'];
+            const platform = data.platform || 'instagram';
+            const tone = data.tone || 'casual';
+            const platformTemplates = templates[platform][tone] || templates.instagram.casual;
+            
+            const captions = [];
+            const selectedTemplates = platformTemplates.slice(0, 3);
+            
+            selectedTemplates.forEach((template, index) => {
+                let caption = template;
+                
+                if (data.hashtags === 'yes') {
+                    const hashtagSet = hashtags.slice(0, 5);
+                    caption = caption.replace('{hashtags}', hashtagSet.join(' '));
+                } else {
+                    caption = caption.replace('{hashtags}', '');
+                }
+
+                captions.push({
+                    id: index + 1,
+                    text: caption.trim(),
+                    platform: platform,
+                    tone: tone
+                });
+            });
+
+            return captions;
+        }
+
+        displayResults(captions) {
+            this.captionsContainer.innerHTML = '';
+            
+            captions.forEach(caption => {
+                const captionEl = document.createElement('div');
+                captionEl.className = 'caption-result';
+                captionEl.innerHTML = '<h4>Version ' + caption.id + ' - ' + caption.tone.charAt(0).toUpperCase() + caption.tone.slice(1) + ' Style</h4><div class="caption-text">' + caption.text.replace(/\\n/g, '<br>') + '</div><button class="copy-btn" onclick="copyCaption(this, \'' + caption.text.replace(/'/g, "\\'") + '\')">📋 Copy Caption</button>';
+                this.captionsContainer.appendChild(captionEl);
+            });
+
+            this.results.classList.add('show');
+            this.results.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        showLoading(show) {
+            this.loading.style.display = show ? 'block' : 'none';
+            document.getElementById('generateBtn').disabled = show;
+            
+            if (show) {
+                this.results.classList.remove('show');
+            }
+        }
+    }
+
+    function copyCaption(btn, text) {
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                btn.textContent = '📋 Copy Caption';
+            }, 2000);
+        });
+    }
+
+    function showEmailPopup() {
+        document.getElementById('emailPopup').classList.add('show');
+    }
+
+    function closeEmailPopup() {
+        document.getElementById('emailPopup').classList.remove('show');
+    }
+
+    document.getElementById('emailCaptureForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('🎉 Thank you! Check your email for your free templates. You now have unlimited access!');
+        localStorage.setItem('premiumUser', 'true');
+        closeEmailPopup();
+        
+        const generator = window.captionGenerator;
+        generator.usageCount = 0;
+        generator.maxFreeUses = 999;
+        generator.updateUsageDisplay();
+    });
+
+    let captionGenerator;
+    document.addEventListener('DOMContentLoaded', () => {
+        captionGenerator = new CaptionGenerator();
+        window.captionGenerator = captionGenerator;
+        
+        setTimeout(() => {
+            if (!localStorage.getItem('emailCaptured') && !localStorage.getItem('premiumUser')) {
+                showEmailPopup();
+            }
+        }, 45000);
+    });
+
+    document.getElementById('emailPopup').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEmailPopup();
+        }
+    });
+</script>
+```
+
+</body>
+</html>
